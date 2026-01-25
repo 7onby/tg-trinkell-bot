@@ -5,18 +5,22 @@ import (
 	"log"
 	"math/rand/v2"
 	"strconv"
+	"tg-trinkell-bot/internal/config"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
-
-const TG_BOT_TOKEN = ""
-const TG_CHAT_ID = 0
 
 func main() {
 	var result int
 	randomNumberToGuess := -1
 
-	bot, err := tgbotapi.NewBotAPI(TG_BOT_TOKEN)
+	cfg, err := config.Load()
+	if err != nil {
+		log.Fatalf("config error: %v", err)
+	}
+	fmt.Println("Config:", cfg)
+
+	bot, err := tgbotapi.NewBotAPI(cfg.TgBotToken)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -51,7 +55,7 @@ func main() {
 			resultStr := strconv.Itoa(result)
 
 			if update.Message.Text == resultStr {
-				msg := tgbotapi.NewMessage(TG_CHAT_ID, "You are not stupid!")
+				msg := tgbotapi.NewMessage(cfg.TgChatID, "You are not stupid!")
 				m, err := bot.Send(msg)
 				fmt.Println(m, err)
 			}
